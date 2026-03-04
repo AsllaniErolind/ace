@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ace Of Barbershop | The Ultimate Grooming Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --gold: #D4AF37;
+            --dark: #0A0A0A;
+            --accent: #1A1A1A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark);
+            color: #E5E5E5;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        .heading-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        .gold-text { color: var(--gold); }
+        .gold-bg { background-color: var(--gold); }
+        .gold-border { border-color: var(--gold); }
+
+        .glass-nav {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .service-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold);
+            background: #151515;
+        }
+
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .btn-shine:hover::after {
+            left: 120%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .active-modal {
+            display: flex;
+        }
+
+        .booking-input {
+            width: 100%;
+            background-color: #f3f4f6;
+            border: 1px solid #333;
+            padding: 1rem;
+            color: #000 !important;
+            font-weight: 500;
+            border-radius: 2px;
+        }
+
+        #ai-trigger {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #ai-trigger:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .ai-bubble {
+            background: var(--accent);
+            color: white;
+            align-self: flex-start;
+            border-left: 3px solid var(--gold);
+        }
+
+        .user-bubble {
+            background: var(--gold);
+            color: black;
+            align-self: flex-end;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        #mobileMenu {
+            transition: opacity 0.3s ease;
+        }
+
+        .ai-card {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid #333;
+            transition: border-color 0.3s;
+        }
+        .ai-card:hover {
+            border-color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass-nav fixed w-full z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-crown gold-text text-2xl"></i>
+            <span class="heading-font text-xl tracking-widest font-bold">ACE OF BARBERSHOP</span>
+        </div>
+        <div class="hidden md:flex gap-8 items-center uppercase text-[10px] tracking-widest font-bold">
+            <a href="#home" class="hover:text-[#D4AF37] transition">Home</a>
+            <a href="#services" class="hover:text-[#D4AF37] transition">Services</a>
+            <a href="#ai-tools" class="hover:text-[#D4AF37] transition">✨ AI Lab</a>
+            <a href="#about" class="hover:text-[#D4AF37] transition">About</a>
+            <a href="#team" class="hover:text-[#D4AF37] transition">Team</a>
+            <button onclick="openBooking()" class="gold-bg text-black px-6 py-2 rounded-sm btn-shine">Book Now</button>
+        </div>
+        <div class="md:hidden text-2xl" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden fixed inset-0 bg-black z-[60] flex flex-col items-center justify-center gap-8 heading-font text-2xl">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-3xl">&times;</button>
+        <a href="#home" onclick="toggleMobileMenu()">Home</a>
+        <a href="#services" onclick="toggleMobileMenu()">Services</a>
+        <a href="#ai-tools" onclick="toggleMobileMenu()">AI Lab</a>
+        <a href="#about" onclick="toggleMobileMenu()">About</a>
+        <a href="#team" onclick="toggleMobileMenu()">Team</a>
+        <button onclick="openBooking(); toggleMobileMenu()" class="gold-text">Book Appointment</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-gradient h-screen flex flex-col justify-center items-center text-center px-4">
+        <h2 class="gold-text heading-font text-lg tracking-[0.4em] mb-4 reveal">THE ROYAL STANDARD</h2>
+        <h1 class="heading-font text-5xl md:text-8xl mb-6 leading-tight reveal delay-100">MASTERING THE<br><span class="gold-text">ART OF CUT</span></h1>
+        <p class="max-w-2xl text-gray-400 text-xs md:text-sm mb-10 leading-relaxed uppercase tracking-widest reveal delay-200">
+            Welcome to the Ace of Barbershop. Step in as a guest, leave as an Ace.
+        </p>
+        <div class="flex flex-col md:flex-row gap-4 reveal delay-300">
+            <button onclick="openBooking()" class="gold-bg text-black px-10 py-4 font-bold uppercase tracking-widest btn-shine">Secure Your Slot</button>
+            <button onclick="openConsultant()" class="border gold-border gold-text px-10 py-4 font-bold uppercase tracking-widest hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-2">
+                ✨ AI Style Consultant
+            </button>
+        </div>
+    </section>
+
+    <!-- ✨ AI Lab Section -->
+    <section id="ai-tools" class="py-24 px-6 bg-black border-y border-[#1a1a1a]">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="heading-font text-4xl mb-4">✨ THE AI LAB</h2>
+                <p class="text-gray-500 text-xs uppercase tracking-widest">Next-Gen Grooming Solutions</p>
+                <div class="w-24 h-1 gold-bg mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Lookbook Generator -->
+                <div class="ai-card p-8 reveal delay-100">
+                    <h3 class="heading-font text-xl mb-4 gold-text">✨ PERSONAL LOOKBOOK</h3>
+                    <p class="text-gray-400 text-sm mb-6">Describe your vibe or an upcoming event (e.g., "Wedding guest, sharp but modern") and our AI will draft your perfect look.</p>
+                    <textarea id="lookbook-prompt" placeholder="Describe your style goals..." class="w-full bg-[#111] border border-[#333] p-4 text-sm text-white mb-4 h-24 focus:border-gold-text outline-none"></textarea>
+                    <button onclick="generateLookbook()" class="w-full gold-bg text-black font-bold py-3 uppercase text-xs tracking-widest btn-shine">✨ Generate My Look</button>
+                    <div id="lookbook-result" class="mt-6 text-sm text-gray-300 italic hidden border-t border-[#333] pt-4"></div>
+                </div>
+
+                <!-- Review Insight -->
+                <div class="ai-card p-8 reveal delay-200">
+                    <h3 class="heading-font text-xl mb-4 gold-text">✨ SHOP VIBE CHECK</h3>
+                    <p class="text-gray-400 text-sm mb-6">Our AI constantly monitors customer feedback. Click below to see a real-time summary of what people love most about us.</p>
+                    <div id="vibe-container" class="bg-[#111] p-4 mb-4 min-h-[100px] flex items-center justify-center border border-[#222]">
+                        <p id="vibe-text" class="text-xs text-gray-500 text-center uppercase tracking-widest">Awaiting Analysis...</p>
+                    </div>
+                    <button onclick="analyzeVibe()" class="w-full border gold-border gold-text font-bold py-3 uppercase text-xs tracking-widest hover:bg-gold-text hover:text-black transition">✨ Analyze Recent Reviews</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 px-6 bg-[#0c0c0c]">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="reveal">
+                <h2 class="heading-font text-4xl mb-4">PREMIUM SERVICES</h2>
+                <div class="w-24 h-1 gold-bg mx-auto mb-16"></div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="service-card bg-accent p-8 border border-[#222] reveal delay-100 text-left">
+                    <i class="fas fa-cut gold-text text-4xl mb-6"></i>
+                    <h3 class="heading-font text-xl mb-3">THE SIGNATURE CUT</h3>
+                    <p class="text-gray-400 text-sm mb-6">A precision haircut tailored to your face shape and personal style.</p>
+                    <div class="flex justify-between items-center border-t border-[#333] pt-4">
+                        <span class="gold-text font-bold">$45</span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">45 MIN</span>
+                    </div>
+                </div>
+                <div class="service-card bg-accent p-8 border border-[#222] reveal delay-200 text-left">
+                    <i class="fas fa-brush gold-text text-4xl mb-6"></i>
+                    <h3 class="heading-font text-xl mb-3">BEARD SCULPTING</h3>
+                    <p class="text-gray-400 text-sm mb-6">Expert beard shaping and lining with steam and hot towel treatment.</p>
+                    <div class="flex justify-between items-center border-t border-[#333] pt-4">
+                        <span class="gold-text font-bold">$30</span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">30 MIN</span>
+                    </div>
+                </div>
+                <div class="service-card bg-accent p-8 border border-[#222] reveal delay-300 text-left">
+                    <i class="fas fa-crown gold-text text-4xl mb-6"></i>
+                    <h3 class="heading-font text-xl mb-3">THE ACE EXPERIENCE</h3>
+                    <p class="text-gray-400 text-sm mb-6">The works. Signature cut, beard trim, and revitalizing face mask.</p>
+                    <div class="flex justify-between items-center border-t border-[#333] pt-4">
+                        <span class="gold-text font-bold">$85</span>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">75 MIN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2 reveal">
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Barbershop Interior" class="rounded-sm shadow-2xl border border-[#333] relative z-10">
+                    <div class="absolute -bottom-6 -right-6 w-full h-full border-2 border-[#D4AF37] rounded-sm z-0 hidden md:block"></div>
+                </div>
+            </div>
+            <div class="md:w-1/2 reveal delay-200">
+                <h4 class="gold-text text-xs uppercase tracking-[0.3em] mb-2">Established 2010</h4>
+                <h2 class="heading-font text-4xl mb-6">MORE THAN JUST A HAIRCUT</h2>
+                <div class="w-16 h-1 gold-bg mb-6"></div>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                    We don't just cut hair; we craft confidence. Ace of Barbershop was founded on the principle that every man deserves a sanctuary where traditional grooming meets modern luxury.
+                </p>
+                <p class="text-gray-400 text-sm leading-relaxed mb-8">
+                    Our master barbers blend time-honored techniques with contemporary styling to deliver a look that is uniquely yours. Step into our world and experience the royal standard.
+                </p>
+                <button onclick="openBooking()" class="border gold-border gold-text px-8 py-3 font-bold uppercase text-xs tracking-widest hover:bg-[#D4AF37] hover:text-black transition">
+                    Our Philosophy
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-24 px-6 bg-[#0c0c0c]">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="reveal">
+                <h2 class="heading-font text-4xl mb-4">THE MASTERS</h2>
+                <div class="w-24 h-1 gold-bg mx-auto mb-16"></div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="reveal delay-100 group">
+                    <div class="relative overflow-hidden mb-6 aspect-[3/4] rounded-sm border border-[#333]">
+                        <img src="https://images.unsplash.com/photo-1618077360395-f3068be8e001?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Julian Vance" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <div class="flex gap-4 text-white text-xl">
+                                <i class="fab fa-instagram cursor-pointer hover:text-gold-text"></i>
+                                <i class="fab fa-twitter cursor-pointer hover:text-gold-text"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="heading-font text-lg mb-1 gold-text">JULIAN VANCE</h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Master Barber & Founder</p>
+                </div>
+                <div class="reveal delay-200 group">
+                    <div class="relative overflow-hidden mb-6 aspect-[3/4] rounded-sm border border-[#333]">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Marcus Sterling" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <i class="fab fa-instagram text-white text-xl cursor-pointer hover:text-gold-text"></i>
+                        </div>
+                    </div>
+                    <h3 class="heading-font text-lg mb-1 gold-text">MARCUS STERLING</h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Fade Specialist</p>
+                </div>
+                <div class="reveal delay-300 group">
+                    <div class="relative overflow-hidden mb-6 aspect-[3/4] rounded-sm border border-[#333]">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Elena Rossi" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <i class="fab fa-instagram text-white text-xl cursor-pointer hover:text-gold-text"></i>
+                        </div>
+                    </div>
+                    <h3 class="heading-font text-lg mb-1 gold-text">ELENA ROSSI</h3>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[0.2em]">Styling & Beard Expert</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="bg-[#111] w-full max-w-lg p-8 rounded-sm relative border border-[#222]">
+            <button onclick="closeBooking()" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-white">&times;</button>
+            <h2 class="heading-font text-3xl mb-2 gold-text">SECURE YOUR SLOT</h2>
+            <form id="bookingForm" class="space-y-6">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Select Service</label>
+                    <select id="booking-service" class="booking-input" required>
+                        <option value="Signature Cut">Signature Cut ($45)</option>
+                        <option value="Beard Sculpting">Beard Sculpting ($30)</option>
+                        <option value="Ace Experience">The Ace Experience ($85)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="booking-date" type="date" class="booking-input" required>
+                    <select id="booking-time" class="booking-input" required></select>
+                </div>
+                <input id="booking-name" type="text" placeholder="Your Full Name" class="booking-input" required>
+                <button type="submit" class="w-full gold-bg text-black py-4 font-bold uppercase tracking-widest btn-shine">Confirm Booking</button>
+            </form>
+            <div id="successContainer" class="hidden text-center py-6">
+                <i class="fas fa-check-circle text-5xl text-green-500 mb-4"></i>
+                <h3 class="heading-font text-xl mb-4">APPOINTMENT SECURED</h3>
+                <button onclick="downloadICS()" class="text-xs gold-text underline uppercase tracking-widest">Add to Calendar (.ics)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Consultant Modal -->
+    <div id="aiModal" class="modal">
+        <div class="bg-[#111] w-full max-w-2xl p-8 rounded-sm relative border border-[#D4AF37]">
+            <button onclick="closeConsultant()" class="absolute top-4 right-4 text-2xl text-gray-500 hover:text-white">&times;</button>
+            <h2 class="heading-font text-3xl mb-4 gold-text">STYLE SCANNER</h2>
+            <div class="relative aspect-video bg-black mb-6 border border-[#333]">
+                <video id="video" class="w-full h-full object-cover hidden" autoplay playsinline></video>
+                <canvas id="canvas" class="hidden"></canvas>
+                <div id="ai-loading" class="absolute inset-0 bg-black/80 hidden flex flex-col items-center justify-center">
+                    <div class="w-12 h-12 border-4 border-gold-text border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p class="heading-font gold-text text-xs tracking-widest">Analyzing Facial Geometry...</p>
+                </div>
+            </div>
+            <div id="ai-result" class="hidden bg-accent p-6 border-l-4 border-gold-text mb-6">
+                <p id="ai-response-text" class="text-sm italic text-gray-300 leading-relaxed"></p>
+            </div>
+            <button id="capture-btn" onclick="analyzeFace()" class="w-full border-2 border-gold-text text-gold-text py-4 font-bold uppercase tracking-widest hover:bg-gold-text hover:text-black transition">
+                Start Face Analysis
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Chatbot -->
+    <div id="ai-trigger" class="gold-bg" onclick="toggleChat()">
+        <i class="fas fa-magic text-black text-2xl"></i>
+    </div>
+    <div id="ai-chat" class="fixed bottom-24 right-8 w-80 md:w-96 h-[500px] bg-[#111] border border-gold-text hidden flex flex-col shadow-2xl z-[100]">
+        <div class="p-4 gold-bg text-black heading-font flex justify-between items-center">
+            <span class="text-xs font-bold tracking-widest">ACE ASSISTANT</span>
+            <button onclick="toggleChat()" class="text-xl">&times;</button>
+        </div>
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
+            <div class="chat-bubble ai-bubble">Good day. I am Ace's virtual concierge. How may I assist your grooming journey today?</div>
+        </div>
+        <div class="p-4 border-t border-[#333] flex gap-2">
+            <input id="chat-input" type="text" placeholder="Type your message..." class="flex-1 bg-white p-3 text-xs text-black focus:outline-none">
+            <button onclick="sendChatMessage()" class="gold-bg text-black px-4 py-2 text-[10px] font-bold">SEND</button>
+        </div>
+    </div>
+
+    <footer class="bg-black py-12 border-t border-[#111] text-center">
+        <div class="flex justify-center gap-8 mb-6 text-gray-500">
+            <i class="fab fa-facebook-f hover:text-gold-text cursor-pointer"></i>
+            <i class="fab fa-instagram hover:text-gold-text cursor-pointer"></i>
+            <i class="fab fa-yelp hover:text-gold-text cursor-pointer"></i>
+        </div>
+        <p class="text-[10px] text-gray-700 uppercase tracking-[0.4em]">&copy; 2024 ACE OF BARBERSHOP. THE ROYAL STANDARD.</p>
+    </footer>
+
+    <script>
+        const apiKey = ""; // Set by environment
+        const modelName = "gemini-2.5-flash-preview-09-2025";
+
+        async function geminiApiCall(prompt, imageBase64 = null) {
+            // Using v1beta for preview environment compatibility
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            
+            const parts = [{ text: prompt }];
+            if (imageBase64) {
+                parts.push({ inlineData: { mimeType: "image/png", data: imageBase64 } });
+            }
+
+            const payload = {
+                contents: [{ parts: parts }]
+            };
+
+            const maxRetries = 5;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || `HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!text) throw new Error("Empty response from AI");
+                    
+                    return text;
+                } catch (e) {
+                    if (i === maxRetries - 1) {
+                        console.error("Gemini Error:", e);
+                        return `The Ace is currently unavailable. (Error: ${e.message})`;
+                    }
+                    // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
+        async function generateLookbook() {
+            const promptInput = document.getElementById('lookbook-prompt');
+            const prompt = promptInput.value;
+            if (!prompt) return;
+            
+            const resultDiv = document.getElementById('lookbook-result');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<span class="animate-pulse gold-text">✨ Consultating with the master...</span>';
+
+            const response = await geminiApiCall(`You are a world-class luxury barber. Based on this vibe: "${prompt}", generate a short 2-3 sentence recommendation for a specific haircut name, beard style, and grooming product. Use a sophisticated, confident tone.`);
+            resultDiv.innerText = response;
+        }
+
+        async function analyzeVibe() {
+            const vibeText = document.getElementById('vibe-text');
+            vibeText.innerHTML = '<span class="animate-pulse gold-text">✨ Reviewing feedback logs...</span>';
+            
+            const mockReviews = [
+                "The atmosphere is incredible, very quiet and professional.",
+                "Julian's fades are the best in the city, hands down.",
+                "Love the hot towel treatment, felt like a king.",
+                "Best espresso while waiting for my cut.",
+                "Sharp lines and even better conversation."
+            ];
+
+            const response = await geminiApiCall(`Summarize the essence of these customer reviews into a single, punchy phrase (max 10 words) in ALL CAPS that represents the shop's brand: ${mockReviews.join(' | ')}`);
+            vibeText.innerText = response;
+            document.getElementById('vibe-container').classList.add('border-gold-text');
+        }
+
+        function toggleMobileMenu() { document.getElementById('mobileMenu').classList.toggle('hidden'); }
+        function toggleChat() { document.getElementById('ai-chat').classList.toggle('hidden'); }
+        // send users directly to Calendly instead of showing the old modal
+        function openBooking() {
+            window.location.href = 'https://calendly.com/appoitmentsetter/patient-booking';
+        }
+        function closeBooking() { 
+            document.getElementById('bookingModal').classList.remove('active-modal'); 
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim(); 
+            if (!msg) return;
+            
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.innerHTML += `<div class="chat-bubble user-bubble">${msg}</div>`;
+            input.value = '';
+            
+            const typingId = 'typing-' + Date.now();
+            chatBox.innerHTML += `<div id="${typingId}" class="chat-bubble ai-bubble italic opacity-50">✨ Drafting response...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const response = await geminiApiCall(`You are Ace, a professional barber concierge at Ace of Barbershop. Answer concisely: ${msg}`);
+            
+            const typingElement = document.getElementById(typingId);
+            if (typingElement) typingElement.remove();
+            
+            chatBox.innerHTML += `<div class="chat-bubble ai-bubble">${response}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        let stream;
+        async function openConsultant() {
+            document.getElementById('aiModal').classList.add('active-modal');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                video.classList.remove('hidden');
+            } catch (err) { 
+                console.error("Camera access denied"); 
+                document.getElementById('ai-result').classList.remove('hidden');
+                document.getElementById('ai-response-text').innerText = "Camera access is required for facial analysis.";
+            }
+        }
+
+        function closeConsultant() {
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            document.getElementById('aiModal').classList.remove('active-modal');
+        }
+
+        async function analyzeFace() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            if (!video.srcObject) return;
+            
+            canvas.width = video.videoWidth; 
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const base64 = canvas.toDataURL('image/png').split(',')[1];
+            
+            document.getElementById('ai-loading').classList.remove('hidden');
+            const res = await geminiApiCall("As a master barber, analyze the facial shape in this image and suggest the most flattering luxury haircut. Be brief and professional.", base64);
+            
+            document.getElementById('ai-loading').classList.add('hidden');
+            document.getElementById('ai-result').classList.remove('hidden');
+            document.getElementById('ai-response-text').innerText = res;
+        }
+
+        // Initialize Booking Times
+        const timeSelect = document.getElementById('booking-time');
+        for(let h=9; h<=18; h++) {
+            for(let m=0; m<60; m+=30) {
+                const hour = h > 12 ? h - 12 : h;
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const time = `${hour}:${m === 0 ? '00' : '30'} ${ampm}`;
+                if (timeSelect) timeSelect.innerHTML += `<option value="${time}">${time}</option>`;
+            }
+        }
+
+        document.getElementById('bookingForm').onsubmit = (e) => {
+            e.preventDefault();
+            document.getElementById('bookingForm').classList.add('hidden');
+            document.getElementById('successContainer').classList.remove('hidden');
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+
+    <!-- Calendly inline widget begin -->
+<div class="calendly-inline-widget" data-url="https://calendly.com/appoitmentsetter/patient-booking" style="min-width:320px;height:700px;"></div>
+<script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<!-- Calendly inline widget end -->
+</body>
+</html>
